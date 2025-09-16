@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата успешна - Точка опоры</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Manrope:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .success-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #E56B1F, #D45A0F);
+            padding: 20px;
+        }
+        
+        .success-content {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            text-align: center;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 30px;
+        }
+        
+        .success-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 36px;
+            color: #1A202C;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .success-message {
+            font-family: 'Manrope', sans-serif;
+            font-size: 18px;
+            color: #2D3748;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .success-details {
+            background-color: #F8F9FA;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #E9ECEF;
+        }
+        
+        .success-details h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 20px;
+            color: #1A202C;
+            margin-bottom: 15px;
+        }
+        
+        .success-details p {
+            font-family: 'Manrope', sans-serif;
+            font-size: 16px;
+            color: #2D3748;
+            margin-bottom: 10px;
+        }
+        
+        .success-details p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .back-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #E56B1F, #D45A0F);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(229, 107, 31, 0.3);
+        }
+        
+        .back-button:hover {
+            background: linear-gradient(135deg, #D45A0F, #C3490D);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(229, 107, 31, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .success-content {
+                padding: 30px 20px;
+            }
+            
+            .success-title {
+                font-size: 28px;
+            }
+            
+            .success-message {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="success-page">
+        <div class="success-content">
+            <div class="success-icon">✅</div>
+            <h1 class="success-title">Оплата успешна!</h1>
+            <p class="success-message">
+                Спасибо за покупку методики "Точка опоры"! Ваш заказ обработан и материалы отправлены на указанный email.
+            </p>
+            
+            <div class="success-details">
+                <h3>Что дальше?</h3>
+                <p>📧 Проверьте ваш email - мы отправили чек и ссылки для доступа к материалам</p>
+                <p>📚 Материалы будут доступны в течение 5 минут после оплаты</p>
+                <p>💬 Если у вас есть вопросы, напишите нам в Telegram: @tochka_opory</p>
+                <p>🛡️ Помните: у вас есть 14 дней на возврат средств, если методика не подойдет</p>
+            </div>
+            
+            <a href="index.html" class="back-button">Вернуться на главную</a>
+        </div>
+    </div>
+    
+    <script>
+        // Проверяем, есть ли данные о платеже в localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            const email = localStorage.getItem('customer_email');
+            const orderId = localStorage.getItem('order_id');
+            
+            if (email && orderId) {
+                // Отправляем данные о успешной оплате на сервер
+                fetch('/api/payment-success', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        orderId: orderId,
+                        product: 'Точка опоры',
+                        price: 990,
+                        timestamp: new Date().toISOString()
+                    })
+                }).catch(error => {
+                    console.log('Server not available, but payment was successful');
+                });
+                
+                // Очищаем localStorage
+                localStorage.removeItem('customer_email');
+                localStorage.removeItem('order_id');
+            }
+        });
+    </script>
+</body>
+</html>

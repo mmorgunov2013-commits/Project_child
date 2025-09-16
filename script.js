@@ -204,16 +204,15 @@ class SpotsCounter {
 // YooMoney Payment Integration
 class YooMoneyPayment {
     constructor() {
-        // Конфигурация ЮMoney - ЗАМЕНИТЕ НА ВАШИ ДАННЫЕ
+        // Конфигурация ЮKassa - ЗАМЕНИТЕ НА ВАШИ ДАННЫЕ
         this.config = {
-            receiver: '410011443641783', // Ваш номер кошелька ЮMoney
-            formcomment: 'Методика "Точка опоры" - профориентация',
-            shortDest: 'Методика "Точка опоры"',
-            sum: 99, // Сумма в рублях (для тестирования)
-            // quickpayForm: 'small', // Убираем, чтобы не требовало приложение
-            paymentType: 'AC', // AC - с банковской карты (по умолчанию)
-            targets: 'Оплата методики профориентации "Точка опоры"',
-            successURL: window.location.origin + '/materials.html' // URL для перенаправления после успешной оплаты
+            shopId: '1037378', // Ваш Shop ID из ЮKassa
+            secretKey: 'live_0MIA1bsEYvXybFGy5QVowAm7Bi1VGnzA-p7EZrTYPHM', // Секретный ключ из ЮKassa
+            amount: 99, // Сумма в рублях (для тестирования)
+            currency: 'RUB',
+            description: 'Методика "Точка опоры" - профориентация',
+            successURL: window.location.origin + '/materials.html',
+            returnURL: window.location.origin + '/index.html'
         };
         this.init();
     }
@@ -263,16 +262,7 @@ class YooMoneyPayment {
                             </div>
                         </div>
                         
-                        <form id="payment-form" method="POST" action="https://yoomoney.ru/quickpay/confirm.xml" target="_blank">
-                            <input type="hidden" name="receiver" value="${this.config.receiver}">
-                            <input type="hidden" name="formcomment" value="${this.config.formcomment}">
-                            <input type="hidden" name="short-dest" value="${this.config.shortDest}">
-                            <input type="hidden" name="sum" value="${this.config.sum}" data-type="number">
-                            <input type="hidden" name="label" value="tochka_opory_${Date.now()}">
-                            <input type="hidden" name="quickpay-form" value="${this.config.quickpayForm}">
-                            <input type="hidden" name="targets" value="${this.config.targets}">
-                            <input type="hidden" name="paymentType" value="${this.config.paymentType}">
-                            <input type="hidden" name="successURL" value="${this.config.successURL}">
+                        <form id="payment-form">
                             
                             <div class="email-section">
                                 <label for="customer-email" class="email-label">
@@ -286,19 +276,8 @@ class YooMoneyPayment {
                                 </div>
                             </div>
                             
-                            <div class="payment-methods">
-                                <label class="payment-method">
-                                    <input type="radio" name="paymentType" value="AC" checked>
-                                    <span class="payment-method-text">💳 Банковская карта</span>
-                                </label>
-                                <label class="payment-method">
-                                    <input type="radio" name="paymentType" value="PC">
-                                    <span class="payment-method-text">💰 ЮMoney кошелек</span>
-                                </label>
-                                <label class="payment-method">
-                                    <input type="radio" name="paymentType" value="MC">
-                                    <span class="payment-method-text">📱 Мобильный платеж</span>
-                                </label>
+                            <div class="payment-info-note">
+                                <p>💳 Оплата через ЮKassa - банковские карты, СБП, электронные кошельки</p>
                             </div>
                             
                             <div class="payment-actions">
@@ -388,7 +367,7 @@ class YooMoneyPayment {
         }
     }
 
-    handlePaymentSubmit(e) {
+    async handlePaymentSubmit(e) {
         e.preventDefault();
         
         // Получаем email
@@ -402,26 +381,62 @@ class YooMoneyPayment {
             return;
         }
         
-        // Добавляем уникальный идентификатор заказа
-        const labelInput = document.querySelector('input[name="label"]');
-        if (labelInput) {
-            labelInput.value = `tochka_opory_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        }
-
-        // Сохраняем email в localStorage для последующего использования
-        localStorage.setItem('customer_email', email);
-        localStorage.setItem('order_id', labelInput.value);
+        // Создаем уникальный идентификатор заказа
+        const orderId = `tochka_opory_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
-        // Отправляем аналитику (если подключена)
-        this.trackPaymentAttempt(email);
+        // Сохраняем email в localStorage
+        localStorage.setItem('customer_email', email);
+        localStorage.setItem('order_id', orderId);
         
         // Показываем уведомление
-        this.showPaymentNotification('Перенаправление на страницу оплаты...');
+        this.showPaymentNotification('Создание платежа...');
         
-        // Отправляем форму
-        setTimeout(() => {
-            e.target.submit();
-        }, 1000);
+        try {
+            // Создаем платеж через ЮKassa
+            const paymentUrl = await this.createYooKassaPayment(email, orderId);
+            
+            // Перенаправляем на страницу оплаты
+            window.open(paymentUrl, '_blank');
+            
+        } catch (error) {
+            console.error('Ошибка создания платежа:', error);
+            this.showPaymentNotification('Ошибка создания платежа. Попробуйте еще раз.', 'error');
+        }
+    }
+
+    async createYooKassaPayment(email, orderId) {
+        // Создаем платеж через ЮKassa API
+        const paymentData = {
+            amount: {
+                value: this.config.amount.toString(),
+                currency: this.config.currency
+            },
+            confirmation: {
+                type: 'redirect',
+                return_url: this.config.returnURL
+            },
+            description: this.config.description,
+            metadata: {
+                email: email,
+                order_id: orderId
+            }
+        };
+
+        const response = await fetch('https://api.yookassa.ru/v3/payments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Basic ${btoa(this.config.shopId + ':' + this.config.secretKey)}`
+            },
+            body: JSON.stringify(paymentData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Ошибка создания платежа');
+        }
+
+        const payment = await response.json();
+        return payment.confirmation.confirmation_url;
     }
 
     validateEmail(email) {

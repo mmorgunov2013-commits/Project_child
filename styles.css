@@ -1298,42 +1298,19 @@ body {
 /* Способ оплаты теперь фиксированный - банковская карта */
 
 .payment-actions {
-    display: flex;
-    gap: 15px;
     margin-bottom: 25px;
 }
 
-.payment-cancel-btn {
-    flex: 1;
-    padding: 15px 25px;
-    background-color: #718096;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.payment-cancel-btn:hover {
-    background-color: #4A5568;
-    transform: translateY(-2px);
-}
-
 .payment-confirm-btn {
-    flex: 2;
-    padding: 15px 25px;
+    width: 100%;
+    padding: 18px 25px;
     background: linear-gradient(135deg, #E56B1F, #D45A0F);
     color: white;
     border: none;
     border-radius: 12px;
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
-    font-size: 16px;
+    font-size: 18px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     cursor: pointer;
@@ -1436,17 +1413,10 @@ body {
         gap: 5px;
     }
     
-    .payment-actions {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .payment-cancel-btn,
     .payment-confirm-btn {
-        flex: none;
         width: 100%;
-        padding: 18px 25px;
-        font-size: 16px;
+        padding: 20px 25px;
+        font-size: 18px;
     }
     
     .email-input {

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Материалы "Точка опоры" - Доступ получен</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Manrope:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .materials-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #E56B1F, #D45A0F);
+            padding: 20px;
+        }
+        
+        .materials-content {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            text-align: center;
+            max-width: 700px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 30px;
+        }
+        
+        .materials-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 36px;
+            color: #1A202C;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .materials-message {
+            font-family: 'Manrope', sans-serif;
+            font-size: 18px;
+            color: #2D3748;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .materials-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #E56B1F, #D45A0F);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 15px;
+            text-decoration: none;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(229, 107, 31, 0.3);
+            margin-bottom: 30px;
+        }
+        
+        .materials-link:hover {
+            background: linear-gradient(135deg, #D45A0F, #C3490D);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(229, 107, 31, 0.4);
+        }
+        
+        .materials-info {
+            background-color: #F8F9FA;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #E9ECEF;
+        }
+        
+        .materials-info h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 20px;
+            color: #1A202C;
+            margin-bottom: 15px;
+        }
+        
+        .materials-info p {
+            font-family: 'Manrope', sans-serif;
+            font-size: 16px;
+            color: #2D3748;
+            margin-bottom: 10px;
+        }
+        
+        .materials-info p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .support-info {
+            background-color: #E6FFFA;
+            border: 2px solid #38A169;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .support-info p {
+            margin: 0 0 10px 0;
+            font-family: 'Manrope', sans-serif;
+            font-size: 14px;
+            color: #2D3748;
+            font-weight: 500;
+        }
+        
+        .support-info p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .back-button {
+            display: inline-block;
+            background-color: #718096;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .back-button:hover {
+            background-color: #4A5568;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .materials-content {
+                padding: 30px 20px;
+            }
+            
+            .materials-title {
+                font-size: 28px;
+            }
+            
+            .materials-message {
+                font-size: 16px;
+            }
+            
+            .materials-link {
+                padding: 18px 30px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="materials-page">
+        <div class="materials-content">
+            <div class="success-icon">🎉</div>
+            <h1 class="materials-title">Оплата успешна!</h1>
+            <p class="materials-message">
+                Спасибо за покупку методики "Точка опоры"! Ваш доступ к материалам активирован.
+            </p>
+            
+            <a href="https://disk.yandex.ru/d/ВАША_ССЫЛКА_НА_ЯНДЕКС_ДИСК" class="materials-link" target="_blank">
+                📁 Скачать материалы
+            </a>
+            
+            <div class="materials-info">
+                <h3>Что вы получили:</h3>
+                <p>📚 Полная методика "Точка опоры" (PDF)</p>
+                <p>📝 Рабочие тетради для прохождения</p>
+                <p>🎯 Шаблоны для анализа с ИИ</p>
+                <p>📊 Список актуальных профессий 2025</p>
+                <p>🎓 Рекомендации по выбору вузов</p>
+                <p>⏰ План действий на 6 месяцев</p>
+            </div>
+            
+            <div class="support-info">
+                <p>💬 Если у вас есть вопросы, пишите в Telegram: @tochka_opory</p>
+                <p>🛡️ Помните: у вас есть 14 дней на возврат средств</p>
+            </div>
+            
+            <a href="index.html" class="back-button">Вернуться на главную</a>
+        </div>
+    </div>
+    
+    <script>
+        // Отправляем аналитику о получении доступа
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Materials page accessed:', {
+                timestamp: new Date().toISOString(),
+                product: 'Точка опоры'
+            });
+            
+            // Можно отправить данные на сервер для аналитики
+            // fetch('/api/materials-accessed', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({
+            //         product: 'Точка опоры',
+            //         timestamp: new Date().toISOString()
+            //     })
+            // });
+        });
+    </script>
+</body>
+</html>

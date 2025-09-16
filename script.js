@@ -210,7 +210,7 @@ class YooMoneyPayment {
             formcomment: 'Методика "Точка опоры" - профориентация',
             shortDest: 'Методика "Точка опоры"',
             sum: 99, // Сумма в рублях (для тестирования)
-            quickpayForm: 'donate',
+            quickpayForm: 'shop',
             paymentType: 'AC', // AC - с банковской карты (по умолчанию)
             targets: 'Оплата методики профориентации "Точка опоры"',
             successURL: window.location.origin + '/materials.html' // URL для перенаправления после успешной оплаты

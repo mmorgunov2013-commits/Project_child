@@ -287,7 +287,6 @@ class YooMoneyPayment {
                             </div>
                             
                             <div class="payment-actions">
-                                <button type="button" class="payment-cancel-btn">Отмена</button>
                                 <button type="submit" class="payment-confirm-btn">Оплатить 990 руб.</button>
                             </div>
                         </form>
@@ -311,12 +310,10 @@ class YooMoneyPayment {
     setupModalHandlers() {
         const modal = document.getElementById('payment-modal');
         const closeBtn = modal.querySelector('.payment-modal-close');
-        const cancelBtn = modal.querySelector('.payment-cancel-btn');
         const form = document.getElementById('payment-form');
 
         // Закрытие модального окна
         closeBtn.addEventListener('click', () => this.hidePaymentModal());
-        cancelBtn.addEventListener('click', () => this.hidePaymentModal());
         
         // Закрытие по клику вне модального окна
         modal.addEventListener('click', (e) => {
@@ -329,8 +326,6 @@ class YooMoneyPayment {
         form.addEventListener('submit', (e) => {
             this.handlePaymentSubmit(e);
         });
-
-        // Способ оплаты теперь фиксированный - банковская карта
     }
 
     showPaymentModal() {

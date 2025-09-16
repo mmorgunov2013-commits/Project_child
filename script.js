@@ -209,11 +209,11 @@ class YooMoneyPayment {
             receiver: '410011443641783', // Ваш номер кошелька ЮMoney
             formcomment: 'Методика "Точка опоры" - профориентация',
             shortDest: 'Методика "Точка опоры"',
-            sum: 990, // Сумма в рублях
+            sum: 99, // Сумма в рублях (для тестирования)
             quickpayForm: 'donate',
             paymentType: 'AC', // AC - с банковской карты (по умолчанию)
             targets: 'Оплата методики профориентации "Точка опоры"',
-            successURL: window.location.origin + '/success.html' // URL для перенаправления после успешной оплаты
+            successURL: window.location.origin + '/materials.html' // URL для перенаправления после успешной оплаты
         };
         this.init();
     }
@@ -254,7 +254,7 @@ class YooMoneyPayment {
                                 <span class="payment-label">Цена:</span>
                                 <span class="payment-value">
                                     <span class="old-price">1990 руб.</span>
-                                    <span class="new-price">990 руб.</span>
+                                    <span class="new-price">990 руб. (тест: 99 руб.)</span>
                                 </span>
                             </div>
                             <div class="payment-item">
@@ -287,7 +287,7 @@ class YooMoneyPayment {
                             </div>
                             
                             <div class="payment-actions">
-                                <button type="submit" class="payment-confirm-btn">Оплатить 990 руб.</button>
+                                <button type="submit" class="payment-confirm-btn">Оплатить 990 руб. (тест: 99 руб.)</button>
                             </div>
                         </form>
                         

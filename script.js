@@ -393,8 +393,22 @@ class YooMoneyPayment {
     }
 
     createYooKassaPayment(email, orderId) {
-        // Создаем платеж через ЮKassa Hosted Checkout
-        const paymentUrl = `https://yookassa.ru/checkout/payments/v2/show?orderId=${orderId}&shopId=${this.config.shopId}&sum=${this.config.amount}&paymentType=AC&quickpay-form=shop&targets=${encodeURIComponent(this.config.description)}&label=${orderId}&formcomment=${encodeURIComponent(this.config.description)}&short-dest=Методика "Точка опоры"&successURL=${encodeURIComponent(this.config.successURL)}&returnURL=${encodeURIComponent(this.config.returnURL)}`;
+        // Создаем платеж через ЮKassa - используем правильный URL
+        // Формируем параметры для YuKassa
+        const params = new URLSearchParams({
+            shopId: this.config.shopId,
+            sum: this.config.amount,
+            paymentType: 'AC', // Банковская карта
+            targets: this.config.description,
+            label: orderId,
+            formcomment: this.config.description,
+            'short-dest': 'Методика "Точка опоры"',
+            successURL: this.config.successURL,
+            returnURL: this.config.returnURL
+        });
+        
+        // Используем правильный URL для YuKassa
+        const paymentUrl = `https://yoomoney.ru/quickpay/confirm.xml?${params.toString()}`;
         
         // Открываем страницу оплаты
         window.open(paymentUrl, '_blank');

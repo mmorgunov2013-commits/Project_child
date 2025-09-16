@@ -1147,6 +1147,8 @@ body {
     border-radius: 20px;
     width: 90%;
     max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     transform: translateY(-50px);
     transition: transform 0.3s ease;
@@ -1293,44 +1295,7 @@ body {
     line-height: 1.4;
 }
 
-.payment-methods {
-    margin-bottom: 25px;
-}
-
-.payment-method {
-    display: flex;
-    align-items: center;
-    padding: 15px 20px;
-    margin-bottom: 10px;
-    background-color: #F8F9FA;
-    border: 2px solid #E9ECEF;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Manrope', sans-serif;
-}
-
-.payment-method:hover {
-    background-color: #E9ECEF;
-    border-color: #D45A0F;
-}
-
-.payment-method input[type="radio"] {
-    margin-right: 15px;
-    transform: scale(1.2);
-    accent-color: #E56B1F;
-}
-
-.payment-method input[type="radio"]:checked + .payment-method-text {
-    color: #E56B1F;
-    font-weight: 600;
-}
-
-.payment-method-text {
-    font-size: 16px;
-    color: #2D3748;
-    transition: all 0.3s ease;
-}
+/* Способ оплаты теперь фиксированный - банковская карта */
 
 .payment-actions {
     display: flex;
@@ -1436,18 +1401,25 @@ body {
 
 /* Mobile Responsive for Payment Modal */
 @media (max-width: 768px) {
+    .payment-modal {
+        padding: 10px;
+    }
+    
     .payment-modal-content {
-        margin: 10% auto;
-        width: 95%;
+        margin: 5% auto;
+        width: 100%;
         max-width: none;
+        max-height: 95vh;
+        border-radius: 15px;
     }
     
     .payment-modal-header {
         padding: 20px 25px;
+        border-radius: 15px 15px 0 0;
     }
     
     .payment-modal-header h3 {
-        font-size: 20px;
+        font-size: 18px;
     }
     
     .payment-modal-body {
@@ -1466,12 +1438,20 @@ body {
     
     .payment-actions {
         flex-direction: column;
+        gap: 10px;
     }
     
     .payment-cancel-btn,
     .payment-confirm-btn {
         flex: none;
         width: 100%;
+        padding: 18px 25px;
+        font-size: 16px;
+    }
+    
+    .email-input {
+        padding: 18px 20px;
+        font-size: 16px;
     }
     
     .payment-notification {

@@ -201,8 +201,8 @@ class SpotsCounter {
     }
 }
 
-// YooMoney Payment Integration
-class YooMoneyPayment {
+// YooKassa Payment Integration
+class YooKassaPayment {
     constructor() {
         // Конфигурация ЮKassa - ЗАМЕНИТЕ НА ВАШИ ДАННЫЕ
         this.config = {
@@ -392,29 +392,57 @@ class YooMoneyPayment {
         this.createYooKassaPayment(email, orderId);
     }
 
-    createYooKassaPayment(email, orderId) {
-        // Создаем платеж через ЮKassa - используем правильный URL
-        // Формируем параметры для YuKassa
-        const params = new URLSearchParams({
-            shopId: this.config.shopId,
-            sum: this.config.amount,
-            paymentType: 'AC', // Банковская карта
-            targets: this.config.description,
-            label: orderId,
-            formcomment: this.config.description,
-            'short-dest': 'Методика "Точка опоры"',
-            successURL: this.config.successURL,
-            returnURL: this.config.returnURL
-        });
-        
-        // Используем правильный URL для YuKassa
-        const paymentUrl = `https://yoomoney.ru/quickpay/confirm.xml?${params.toString()}`;
-        
-        // Открываем страницу оплаты
-        window.open(paymentUrl, '_blank');
-        
-        // Показываем уведомление
-        this.showPaymentNotification('Перенаправление на страницу оплаты...');
+    async createYooKassaPayment(email, orderId) {
+        try {
+            // Создаем платеж через новый API ЮKassa
+            const paymentData = {
+                amount: {
+                    value: this.config.amount.toFixed(2),
+                    currency: this.config.currency
+                },
+                capture: true,
+                confirmation: {
+                    type: "redirect",
+                    return_url: this.config.returnURL
+                },
+                description: this.config.description,
+                metadata: {
+                    order_id: orderId,
+                    customer_email: email
+                }
+            };
+
+            // Создаем уникальный ключ идемпотентности
+            const idempotenceKey = `${orderId}_${Date.now()}`;
+
+            // Отправляем запрос на создание платежа
+            const response = await fetch('https://api.yookassa.ru/v3/payments', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Basic ${btoa(this.config.shopId + ':' + this.config.secretKey)}`,
+                    'Idempotence-Key': idempotenceKey,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(paymentData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const payment = await response.json();
+            
+            // Перенаправляем пользователя на страницу оплаты
+            if (payment.confirmation && payment.confirmation.confirmation_url) {
+                window.location.href = payment.confirmation.confirmation_url;
+            } else {
+                throw new Error('Не получен URL для подтверждения платежа');
+            }
+
+        } catch (error) {
+            console.error('Ошибка создания платежа:', error);
+            this.showPaymentNotification('Ошибка при создании платежа. Попробуйте еще раз.', 'error');
+        }
     }
 
     validateEmail(email) {
@@ -516,7 +544,7 @@ document.addEventListener('DOMContentLoaded', function() {
     new TestimonialsSlider();
     new FAQAccordion();
     new SpotsCounter();
-    new YooMoneyPayment(); // Инициализируем платежную систему
+    new YooKassaPayment(); // Инициализируем платежную систему
     
     // Add smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {

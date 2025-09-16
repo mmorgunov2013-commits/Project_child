@@ -367,7 +367,7 @@ class YooMoneyPayment {
         }
     }
 
-    async handlePaymentSubmit(e) {
+    handlePaymentSubmit(e) {
         e.preventDefault();
         
         // Получаем email
@@ -388,55 +388,19 @@ class YooMoneyPayment {
         localStorage.setItem('customer_email', email);
         localStorage.setItem('order_id', orderId);
         
-        // Показываем уведомление
-        this.showPaymentNotification('Создание платежа...');
-        
-        try {
-            // Создаем платеж через ЮKassa
-            const paymentUrl = await this.createYooKassaPayment(email, orderId);
-            
-            // Перенаправляем на страницу оплаты
-            window.open(paymentUrl, '_blank');
-            
-        } catch (error) {
-            console.error('Ошибка создания платежа:', error);
-            this.showPaymentNotification('Ошибка создания платежа. Попробуйте еще раз.', 'error');
-        }
+        // Создаем платеж через ЮKassa
+        this.createYooKassaPayment(email, orderId);
     }
 
-    async createYooKassaPayment(email, orderId) {
-        // Создаем платеж через ЮKassa API
-        const paymentData = {
-            amount: {
-                value: this.config.amount.toString(),
-                currency: this.config.currency
-            },
-            confirmation: {
-                type: 'redirect',
-                return_url: this.config.returnURL
-            },
-            description: this.config.description,
-            metadata: {
-                email: email,
-                order_id: orderId
-            }
-        };
-
-        const response = await fetch('https://api.yookassa.ru/v3/payments', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Basic ${btoa(this.config.shopId + ':' + this.config.secretKey)}`
-            },
-            body: JSON.stringify(paymentData)
-        });
-
-        if (!response.ok) {
-            throw new Error('Ошибка создания платежа');
-        }
-
-        const payment = await response.json();
-        return payment.confirmation.confirmation_url;
+    createYooKassaPayment(email, orderId) {
+        // Создаем платеж через ЮKassa Hosted Checkout
+        const paymentUrl = `https://yookassa.ru/checkout/payments/v2/show?orderId=${orderId}&shopId=${this.config.shopId}&sum=${this.config.amount}&paymentType=AC&quickpay-form=shop&targets=${encodeURIComponent(this.config.description)}&label=${orderId}&formcomment=${encodeURIComponent(this.config.description)}&short-dest=Методика "Точка опоры"&successURL=${encodeURIComponent(this.config.successURL)}&returnURL=${encodeURIComponent(this.config.returnURL)}`;
+        
+        // Открываем страницу оплаты
+        window.open(paymentUrl, '_blank');
+        
+        // Показываем уведомление
+        this.showPaymentNotification('Перенаправление на страницу оплаты...');
     }
 
     validateEmail(email) {

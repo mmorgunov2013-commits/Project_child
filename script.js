@@ -211,7 +211,7 @@ class YooMoneyPayment {
             shortDest: 'Методика "Точка опоры"',
             sum: 990, // Сумма в рублях
             quickpayForm: 'donate',
-            paymentType: 'PC', // PC - с кошелька ЮMoney, AC - с банковской карты
+            paymentType: 'AC', // AC - с банковской карты (по умолчанию)
             targets: 'Оплата методики профориентации "Точка опоры"',
             successURL: window.location.origin + '/success.html' // URL для перенаправления после успешной оплаты
         };
@@ -286,17 +286,6 @@ class YooMoneyPayment {
                                 </div>
                             </div>
                             
-                            <div class="payment-methods">
-                                <label class="payment-method">
-                                    <input type="radio" name="paymentType" value="PC" checked>
-                                    <span class="payment-method-text">ЮMoney кошелек</span>
-                                </label>
-                                <label class="payment-method">
-                                    <input type="radio" name="paymentType" value="AC">
-                                    <span class="payment-method-text">Банковская карта</span>
-                                </label>
-                            </div>
-                            
                             <div class="payment-actions">
                                 <button type="button" class="payment-cancel-btn">Отмена</button>
                                 <button type="submit" class="payment-confirm-btn">Оплатить 990 руб.</button>
@@ -341,13 +330,7 @@ class YooMoneyPayment {
             this.handlePaymentSubmit(e);
         });
 
-        // Обновление типа платежа
-        const paymentMethods = form.querySelectorAll('input[name="paymentType"]');
-        paymentMethods.forEach(method => {
-            method.addEventListener('change', (e) => {
-                this.updatePaymentType(e.target.value);
-            });
-        });
+        // Способ оплаты теперь фиксированный - банковская карта
     }
 
     showPaymentModal() {
@@ -380,12 +363,7 @@ class YooMoneyPayment {
         }, 300);
     }
 
-    updatePaymentType(type) {
-        const hiddenInput = document.querySelector('input[name="paymentType"][type="hidden"]');
-        if (hiddenInput) {
-            hiddenInput.value = type;
-        }
-    }
+    // Способ оплаты теперь фиксированный - банковская карта
 
     handlePaymentSubmit(e) {
         e.preventDefault();

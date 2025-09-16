@@ -201,12 +201,328 @@ class SpotsCounter {
     }
 }
 
+// YooMoney Payment Integration
+class YooMoneyPayment {
+    constructor() {
+        // Конфигурация ЮMoney - ЗАМЕНИТЕ НА ВАШИ ДАННЫЕ
+        this.config = {
+            receiver: '410011443641783', // Ваш номер кошелька ЮMoney
+            formcomment: 'Методика "Точка опоры" - профориентация',
+            shortDest: 'Методика "Точка опоры"',
+            sum: 990, // Сумма в рублях
+            quickpayForm: 'donate',
+            paymentType: 'PC', // PC - с кошелька ЮMoney, AC - с банковской карты
+            targets: 'Оплата методики профориентации "Точка опоры"',
+            successURL: window.location.origin + '/success.html' // URL для перенаправления после успешной оплаты
+        };
+        this.init();
+    }
+
+    init() {
+        this.setupPaymentButtons();
+        this.createPaymentModal();
+    }
+
+    setupPaymentButtons() {
+        // Находим все CTA кнопки и добавляем обработчики
+        const ctaButtons = document.querySelectorAll('.cta-button, .hero-cta, .final-cta-button');
+        
+        ctaButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.showPaymentModal();
+            });
+        });
+    }
+
+    createPaymentModal() {
+        // Создаем модальное окно для оплаты
+        const modalHTML = `
+            <div id="payment-modal" class="payment-modal">
+                <div class="payment-modal-content">
+                    <div class="payment-modal-header">
+                        <h3>Оплата методики "Точка опоры"</h3>
+                        <span class="payment-modal-close">&times;</span>
+                    </div>
+                    <div class="payment-modal-body">
+                        <div class="payment-info">
+                            <div class="payment-item">
+                                <span class="payment-label">Товар:</span>
+                                <span class="payment-value">Методика "Точка опоры"</span>
+                            </div>
+                            <div class="payment-item">
+                                <span class="payment-label">Цена:</span>
+                                <span class="payment-value">
+                                    <span class="old-price">1990 руб.</span>
+                                    <span class="new-price">990 руб.</span>
+                                </span>
+                            </div>
+                            <div class="payment-item">
+                                <span class="payment-label">Скидка:</span>
+                                <span class="payment-value discount">50%</span>
+                            </div>
+                        </div>
+                        
+                        <form id="payment-form" method="POST" action="https://yoomoney.ru/quickpay/confirm.xml" target="_blank">
+                            <input type="hidden" name="receiver" value="${this.config.receiver}">
+                            <input type="hidden" name="formcomment" value="${this.config.formcomment}">
+                            <input type="hidden" name="short-dest" value="${this.config.shortDest}">
+                            <input type="hidden" name="sum" value="${this.config.sum}" data-type="number">
+                            <input type="hidden" name="label" value="tochka_opory_${Date.now()}">
+                            <input type="hidden" name="quickpay-form" value="${this.config.quickpayForm}">
+                            <input type="hidden" name="targets" value="${this.config.targets}">
+                            <input type="hidden" name="paymentType" value="${this.config.paymentType}">
+                            <input type="hidden" name="successURL" value="${this.config.successURL}">
+                            
+                            <div class="email-section">
+                                <label for="customer-email" class="email-label">
+                                    <span class="email-icon">📧</span>
+                                    Email для отправки чека и материалов
+                                </label>
+                                <input type="email" id="customer-email" name="customer-email" class="email-input" 
+                                       placeholder="ваш@email.com" required>
+                                <div class="email-note">
+                                    На этот email мы отправим чек об оплате и ссылки для доступа к методике
+                                </div>
+                            </div>
+                            
+                            <div class="payment-methods">
+                                <label class="payment-method">
+                                    <input type="radio" name="paymentType" value="PC" checked>
+                                    <span class="payment-method-text">ЮMoney кошелек</span>
+                                </label>
+                                <label class="payment-method">
+                                    <input type="radio" name="paymentType" value="AC">
+                                    <span class="payment-method-text">Банковская карта</span>
+                                </label>
+                            </div>
+                            
+                            <div class="payment-actions">
+                                <button type="button" class="payment-cancel-btn">Отмена</button>
+                                <button type="submit" class="payment-confirm-btn">Оплатить 990 руб.</button>
+                            </div>
+                        </form>
+                        
+                        <div class="payment-guarantee">
+                            <p>✅ Гарантия возврата средств в течение 14 дней</p>
+                            <p>🔒 Безопасная оплата через ЮMoney</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Добавляем модальное окно в DOM
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
+        // Добавляем обработчики для модального окна
+        this.setupModalHandlers();
+    }
+
+    setupModalHandlers() {
+        const modal = document.getElementById('payment-modal');
+        const closeBtn = modal.querySelector('.payment-modal-close');
+        const cancelBtn = modal.querySelector('.payment-cancel-btn');
+        const form = document.getElementById('payment-form');
+
+        // Закрытие модального окна
+        closeBtn.addEventListener('click', () => this.hidePaymentModal());
+        cancelBtn.addEventListener('click', () => this.hidePaymentModal());
+        
+        // Закрытие по клику вне модального окна
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.hidePaymentModal();
+            }
+        });
+
+        // Обработка отправки формы
+        form.addEventListener('submit', (e) => {
+            this.handlePaymentSubmit(e);
+        });
+
+        // Обновление типа платежа
+        const paymentMethods = form.querySelectorAll('input[name="paymentType"]');
+        paymentMethods.forEach(method => {
+            method.addEventListener('change', (e) => {
+                this.updatePaymentType(e.target.value);
+            });
+        });
+    }
+
+    showPaymentModal() {
+        const modal = document.getElementById('payment-modal');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        // Восстанавливаем email из localStorage если есть
+        const savedEmail = localStorage.getItem('customer_email');
+        if (savedEmail) {
+            const emailInput = document.getElementById('customer-email');
+            if (emailInput) {
+                emailInput.value = savedEmail;
+            }
+        }
+        
+        // Анимация появления
+        setTimeout(() => {
+            modal.classList.add('show');
+        }, 10);
+    }
+
+    hidePaymentModal() {
+        const modal = document.getElementById('payment-modal');
+        modal.classList.remove('show');
+        document.body.style.overflow = 'auto';
+        
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
+    }
+
+    updatePaymentType(type) {
+        const hiddenInput = document.querySelector('input[name="paymentType"][type="hidden"]');
+        if (hiddenInput) {
+            hiddenInput.value = type;
+        }
+    }
+
+    handlePaymentSubmit(e) {
+        e.preventDefault();
+        
+        // Получаем email
+        const emailInput = document.getElementById('customer-email');
+        const email = emailInput.value.trim();
+        
+        // Валидация email
+        if (!this.validateEmail(email)) {
+            this.showPaymentNotification('Пожалуйста, введите корректный email адрес', 'error');
+            emailInput.focus();
+            return;
+        }
+        
+        // Добавляем уникальный идентификатор заказа
+        const labelInput = document.querySelector('input[name="label"]');
+        if (labelInput) {
+            labelInput.value = `tochka_opory_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        }
+
+        // Сохраняем email в localStorage для последующего использования
+        localStorage.setItem('customer_email', email);
+        localStorage.setItem('order_id', labelInput.value);
+        
+        // Отправляем аналитику (если подключена)
+        this.trackPaymentAttempt(email);
+        
+        // Показываем уведомление
+        this.showPaymentNotification('Перенаправление на страницу оплаты...');
+        
+        // Отправляем форму
+        setTimeout(() => {
+            e.target.submit();
+        }, 1000);
+    }
+
+    validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    trackPaymentAttempt(email) {
+        // Здесь можно добавить отправку данных в аналитику
+        console.log('Payment attempt tracked:', {
+            product: 'Точка опоры',
+            price: 990,
+            email: email,
+            timestamp: new Date().toISOString()
+        });
+        
+        // Можно отправить данные на ваш сервер для обработки
+        // fetch('/api/track-payment', {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify({
+        //         email: email,
+        //         product: 'Точка опоры',
+        //         price: 990,
+        //         timestamp: new Date().toISOString()
+        //     })
+        // });
+    }
+
+    // Функция для обработки успешного платежа
+    handleSuccessfulPayment() {
+        const email = localStorage.getItem('customer_email');
+        const orderId = localStorage.getItem('order_id');
+        
+        if (email && orderId) {
+            // Показываем уведомление об успешной оплате
+            this.showPaymentNotification('Оплата прошла успешно! Материалы отправлены на ваш email.', 'success');
+            
+            // Отправляем данные о успешной оплате на сервер
+            this.sendPaymentConfirmation(email, orderId);
+            
+            // Очищаем localStorage
+            localStorage.removeItem('customer_email');
+            localStorage.removeItem('order_id');
+        }
+    }
+
+    // Функция для отправки подтверждения оплаты на сервер
+    sendPaymentConfirmation(email, orderId) {
+        console.log('Payment confirmed:', {
+            email: email,
+            orderId: orderId,
+            product: 'Точка опоры',
+            price: 990,
+            timestamp: new Date().toISOString()
+        });
+        
+        // Здесь можно отправить данные на ваш сервер для отправки материалов
+        // fetch('/api/send-materials', {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify({
+        //         email: email,
+        //         orderId: orderId,
+        //         product: 'Точка опоры',
+        //         price: 990
+        //     })
+        // });
+    }
+
+    showPaymentNotification(message, type = 'success') {
+        // Создаем уведомление
+        const notification = document.createElement('div');
+        notification.className = `payment-notification ${type}`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        // Показываем уведомление
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        // Убираем уведомление через 3 секунды
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+}
+
 // Initialize timer when page loads
 document.addEventListener('DOMContentLoaded', function() {
     new CountdownTimer();
     new TestimonialsSlider();
     new FAQAccordion();
     new SpotsCounter();
+    new YooMoneyPayment(); // Инициализируем платежную систему
     
     // Add smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {

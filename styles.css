@@ -42,7 +42,7 @@ body {
     font-family: 'Montserrat', 'Manrope', sans-serif;
     font-size: 48px;
     font-weight: 800;
-    color: #FFFFFF;
+    color: #FFFFFF; 
     margin-bottom: 24px;
     line-height: 1.1;
     letter-spacing: -0.02em;
@@ -1295,7 +1295,44 @@ body {
     line-height: 1.4;
 }
 
-/* Способ оплаты теперь фиксированный - банковская карта */
+.payment-methods {
+    margin-bottom: 25px;
+}
+
+.payment-method {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    background-color: #F8F9FA;
+    border: 2px solid #E9ECEF;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Manrope', sans-serif;
+}
+
+.payment-method:hover {
+    background-color: #E9ECEF;
+    border-color: #D45A0F;
+}
+
+.payment-method input[type="radio"] {
+    margin-right: 15px;
+    transform: scale(1.2);
+    accent-color: #E56B1F;
+}
+
+.payment-method input[type="radio"]:checked + .payment-method-text {
+    color: #E56B1F;
+    font-weight: 600;
+}
+
+.payment-method-text {
+    font-size: 16px;
+    color: #2D3748;
+    transition: all 0.3s ease;
+}
 
 .payment-actions {
     margin-bottom: 25px;
